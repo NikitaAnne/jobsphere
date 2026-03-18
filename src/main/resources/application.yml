@@ -1,0 +1,124 @@
+spring:
+  application:
+    name: jobsphere
+
+  # ===== Database =====
+  datasource:
+    url: jdbc:postgresql://localhost:5432/jobsphere
+    username: jobsphere
+    password: jobsphere123
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  # ===== Flyway =====
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  # ===== Redis =====
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password: ""
+      timeout: 2000ms
+
+  # ===== Kafka =====
+  kafka:
+    bootstrap-servers: localhost:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: jobsphere-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "com.jobsphere.event"
+
+  # ===== Mail (configure for production) =====
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME:your-email@gmail.com}
+    password: ${MAIL_PASSWORD:your-app-password}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+  # ===== File Upload =====
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
+  # ===== Cache =====
+  cache:
+    type: redis
+    redis:
+      time-to-live: 300000  # 5 minutes
+
+# ===== Server =====
+server:
+  port: 8080
+  error:
+    include-message: always
+    include-binding-errors: always
+
+# ===== App Custom Properties =====
+app:
+  jwt:
+    secret: ${JWT_SECRET:bXlTdXBlclNlY3JldEtleUZvckpvYlNwaGVyZUFwcGxpY2F0aW9u2024!@#}
+    access-token-expiry-ms: 900000       # 15 minutes
+    refresh-token-expiry-ms: 604800000   # 7 days
+  openai:
+    api-key: ${OPENAI_API_KEY:}          # Optional: set to enable AI skill matching
+    api-url: https://api.openai.com/v1/chat/completions
+    model: gpt-3.5-turbo
+    enabled: ${OPENAI_ENABLED:false}
+  upload:
+    dir: ./uploads/resumes/
+  kafka:
+    topics:
+      application-status: application-status-changed
+
+# ===== Swagger / OpenAPI =====
+springdoc:
+  api-docs:
+    path: /v3/api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operations-sorter: method
+    tags-sorter: alpha
+
+# ===== Actuator =====
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+  endpoint:
+    health:
+      show-details: always
+
+# ===== Logging =====
+logging:
+  level:
+    com.jobsphere: DEBUG
+    org.springframework.security: INFO
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
