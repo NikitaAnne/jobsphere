@@ -1,5 +1,6 @@
 package com.jobsphere.entity;
 
+
 import jakarta.persistence.*;
 import lombok.*;
 
