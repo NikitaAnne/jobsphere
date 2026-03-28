@@ -1,0 +1,91 @@
+version: '3.9'
+
+services:
+
+  # ===== PostgreSQL =====
+  postgres:
+    image: postgres:15-alpine
+    container_name: jobsphere-postgres
+    environment:
+      POSTGRES_DB: jobsphere
+      POSTGRES_USER: jobsphere
+      POSTGRES_PASSWORD: jobsphere123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U jobsphere"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== Redis =====
+  redis:
+    image: redis:7-alpine
+    container_name: jobsphere-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ===== Zookeeper (required by Kafka) =====
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.3
+    container_name: jobsphere-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  # ===== Kafka =====
+  kafka:
+    image: confluentinc/cp-kafka:7.5.3
+    container_name: jobsphere-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+    healthcheck:
+      test: ["CMD", "kafka-broker-api-versions", "--bootstrap-server", "localhost:9092"]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+
+  # ===== JobSphere Application =====
+  app:
+    build: .
+    container_name: jobsphere-app
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/jobsphere
+      SPRING_DATASOURCE_USERNAME: jobsphere
+      SPRING_DATASOURCE_PASSWORD: jobsphere123
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      OPENAI_ENABLED: "false"   # Set to true and add OPENAI_API_KEY to enable AI matching
+      # OPENAI_API_KEY: your-key-here
+    volumes:
+      - uploads_data:/app/uploads/resumes
+
+volumes:
+  postgres_data:
+  uploads_data:
