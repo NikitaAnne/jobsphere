@@ -17,7 +17,7 @@ jobs:
         env:
           POSTGRES_DB: jobsphere
           POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: jobsphere123
+          POSTGRES_PASSWORD: root123
         ports:
           - 5432:5432
         options: >-
@@ -25,17 +25,23 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-      # ADDING KAFKA HERE SO THE APP CAN START
+      # Switch to Confluent Kafka - much more stable for GitHub Actions
       kafka:
-        image: bitnami/kafka:3.6
+        image: confluentinc/cp-kafka:7.4.0
         env:
-          KAFKA_CFG_NODE_ID: 0
-          KAFKA_CFG_PROCESS_ROLES: controller,broker
-          KAFKA_CFG_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093
-          KAFKA_CFG_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
-          KAFKA_CFG_CONTROLLER_QUORUM_VOTERS: 0@localhost:9093
-          KAFKA_CFG_CONTROLLER_LISTENER_NAMES: CONTROLLER
-          ALLOW_PLAINTEXT_LISTENER: yes
+          KAFKA_NODE_ID: 1
+          KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: 'CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT'
+          KAFKA_ADVERTISED_LISTENERS: 'PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092'
+          KAFKA_JMX_PORT: 9101
+          KAFKA_JMX_HOSTNAME: localhost
+          KAFKA_PROCESS_ROLES: 'broker,controller'
+          KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+          KAFKA_CONTROLLER_QUORUM_VOTERS: '1@kafka:29093'
+          KAFKA_LISTENERS: 'PLAINTEXT://:29092,CONTROLLER://:29093,PLAINTEXT_HOST://:9092'
+          KAFKA_INTER_BROKER_LISTENER_NAME: 'PLAINTEXT'
+          KAFKA_CONTROLLER_LISTENER_NAMES: 'CONTROLLER'
+          KAFKA_LOG_DIRS: '/tmp/kraft-combined-logs'
+          CLUSTER_ID: 'MkU3OEVBNTcwNTJENDM2Qk'
         ports:
           - 9092:9092
 
@@ -50,9 +56,9 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      # We provide the DB/Kafka details as environment variables to the tests
       - name: Build and Run Tests
-        run: mvn clean verify -B
+        # We use -DskipTests=false to be explicit
+        run: mvn clean verify -B -DskipTests=false
         env:
           SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5432/jobsphere
           SPRING_DATASOURCE_USERNAME: postgres
