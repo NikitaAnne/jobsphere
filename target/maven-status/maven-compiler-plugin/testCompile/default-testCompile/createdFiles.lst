@@ -1,0 +1,3 @@
+com\jobsphere\service\JobServiceTest.class
+com\jobsphere\integration\JobApiIntegrationTest.class
+com\jobsphere\service\AuthServiceTest.class

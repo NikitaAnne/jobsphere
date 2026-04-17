@@ -72,7 +72,7 @@ class JobServiceTest {
                     .jobType(j.getJobType()).postedBy(recruiter).status(Job.JobStatus.ACTIVE).build();
             return j;
         });
-        when(applicationRepository.countByJobId(anyLong())).thenReturn(0L);
+        when(applicationRepository.countByJobId(any())).thenReturn(0L);
 
         var response = jobService.createJob(request, auth);
 

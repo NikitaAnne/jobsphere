@@ -39,7 +39,7 @@ public class SecurityConfig {
             "/swagger-ui.html",
             "/actuator/health"
     };
-    
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.jobsphere.integration.JobApiIntegrationTest" time="0.031" tests="8" errors="0" skipped="8" failures="0">
+  <properties/>
+  <testcase name="registerRecruiter" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="registerCandidate" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="createJob" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="searchJobs" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="applyToJob" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="updateApplicationStatus" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="recruiterCannotApply" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+  <testcase name="loginWithWrongPassword" classname="com.jobsphere.integration.JobApiIntegrationTest" time="0.0">
+    <skipped message="class com.jobsphere.integration.JobApiIntegrationTest is @Disabled"/>
+  </testcase>
+</testsuite>
